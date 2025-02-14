@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import prography.assignment.domain.BaseTimeEntity;
 import prography.assignment.domain.user.User;
+import prography.assignment.exception.CommonException;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -34,5 +35,15 @@ public class Room extends BaseTimeEntity {
         this.title = title;
         this.roomType = roomType;
         this.status = RoomConstants.WAIT;
+    }
+
+    public int getMaxCapacity() {
+        if (roomType.equals(RoomConstants.SINGLE)) {
+            return 2;
+        }
+        if (roomType.equals(RoomConstants.DOUBLE)) {
+            return 4;
+        }
+        throw new CommonException();
     }
 }
