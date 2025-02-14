@@ -22,4 +22,16 @@ public class User extends BaseTimeEntity {
     private String name;
     private String email;
     private String status; // WAIT, ACTIVE, NON_ACTIVE
+
+    public User(
+            Integer fakerId,
+            String name,
+            String email,
+            String status
+    ) {
+        this.fakerId = fakerId;
+        this.name = name;
+        this.email = email;
+        this.status = status;
+    }
 }

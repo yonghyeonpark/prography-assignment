@@ -26,7 +26,11 @@ public class UserRoom {
 
     private String team; // RED, BLUE
 
-    public UserRoom(User user, Room room, String team) {
+    public UserRoom(
+            User user,
+            Room room,
+            String team
+    ) {
         this.user = user;
         this.room = room;
         this.team = team;
