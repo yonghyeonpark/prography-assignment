@@ -2,10 +2,12 @@ package prography.assignment.domain.userroom;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import prography.assignment.domain.room.Room;
 import prography.assignment.domain.user.User;
 
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 public class UserRoom {
