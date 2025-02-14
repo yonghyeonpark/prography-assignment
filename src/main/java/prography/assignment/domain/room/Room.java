@@ -46,4 +46,8 @@ public class Room extends BaseTimeEntity {
         }
         throw new CommonException();
     }
+
+    public void finishRoom() {
+        this.status = RoomConstants.FINISHED;
+    }
 }
