@@ -45,20 +45,27 @@ public class RoomService {
 
         Room room = createRoomRequest.toEntity(host);
         roomRepository.save(room);
-        userRoomRepository.save(new UserRoom(host, room, UserRoomConstants.TEAM_RED));
+        userRoomRepository.save(
+                new UserRoom(
+                        host,
+                        room,
+                        UserRoomConstants.TEAM_RED
+                )
+        );
     }
 
+    // 방 목록 조회
     public RoomsResponse getRooms(Pageable pageable) {
-        Page<RoomResponse> result = roomRepository.findAll(pageable)
+        Page<RoomResponse> result = roomRepository.findAllWithHost(pageable)
                 .map(RoomResponse::from);
         return RoomsResponse.from(result);
     }
 
-    public Room getRoomById(Integer roomId) {
+    // 방 단건 조회
+    public RoomResponse getRoomById(Integer roomId) {
         Room room = roomRepository.findById(roomId)
-                .orElseThrow(() -> new RuntimeException("dd"));
-
-        // DTO 변환
+                .orElseThrow(CommonException::new);
+        return RoomResponse.from(room);
     }
 
     public void attendRoom(
