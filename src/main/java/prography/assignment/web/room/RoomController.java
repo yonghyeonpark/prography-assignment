@@ -7,6 +7,7 @@ import prography.assignment.service.room.RoomService;
 import prography.assignment.web.ApiResponse;
 import prography.assignment.web.room.dto.request.AttendRoomRequest;
 import prography.assignment.web.room.dto.request.CreateRoomRequest;
+import prography.assignment.web.room.dto.request.OutRoomRequest;
 import prography.assignment.web.room.dto.response.RoomResponse;
 import prography.assignment.web.room.dto.response.RoomsResponse;
 
@@ -36,5 +37,10 @@ public class RoomController {
     public ApiResponse<Void> attendRoom(@PathVariable Integer roomId, @RequestBody AttendRoomRequest attendRoomRequest) {
         roomService.attendRoom(roomId, attendRoomRequest);
         return ApiResponse.responseSuccess();
+    }
+
+    @PostMapping("/room/out/{roomId}")
+    public ApiResponse<Void> outRoom(@PathVariable Integer roomId, @RequestBody OutRoomRequest outRoomRequest) {
+        roomService.outRoom(roomId, outRoomRequest);
     }
 }

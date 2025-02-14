@@ -17,6 +17,7 @@ import prography.assignment.domain.userroom.UserRoomRepository;
 import prography.assignment.exception.CommonException;
 import prography.assignment.web.room.dto.request.AttendRoomRequest;
 import prography.assignment.web.room.dto.request.CreateRoomRequest;
+import prography.assignment.web.room.dto.request.OutRoomRequest;
 import prography.assignment.web.room.dto.response.RoomResponse;
 import prography.assignment.web.room.dto.response.RoomsResponse;
 
@@ -96,11 +97,11 @@ public class RoomService {
             throw new CommonException();
         }
 
-        // 참가 방 정원 초과 여부 검증
         int redCount = userRoomRepository.countByRoomIdAndRoomRoomType(roomId, UserRoomConstants.TEAM_RED);
         int blueCount = userRoomRepository.countByRoomIdAndRoomRoomType(roomId, UserRoomConstants.TEAM_BLUE);
         int currentCount = redCount + blueCount;
 
+        // 참가 방 정원 초과 여부 검증
         int maxCapacity = room.getMaxCapacity();
         if (maxCapacity <= currentCount) {
             throw new CommonException();
@@ -121,6 +122,33 @@ public class RoomService {
 
     // 방 퇴장
     @Transactional
-    public void outOfRoom(Integer roomId) {
+    public void outRoom(
+            Integer roomId,
+            OutRoomRequest outRoomRequest
+    ) {
+        Integer userId = outRoomRequest.userId();
+
+        // 참가 여부 확인
+        if (!userRoomRepository.existsByRoomIdAndUserId(roomId, userId)) {
+            throw new CommonException();
+        }
+
+        Room room = roomRepository.findByIdWithHost(roomId)
+                .orElseThrow(CommonException::new);
+
+        // 방 상태 확인
+        if (!room.getStatus().equals(RoomConstants.WAIT)) {
+            throw new CommonException();
+        }
+
+        // 호스트가 나가면 모두 퇴장 및 FINISH로 상태 변경
+        if (userId.equals(room.getHost().getId())) {
+            userRoomRepository.deleteByRoomId(roomId);
+            room.finishRoom();
+            return;
+        }
+
+        // 호스트가 아닌 경우 해당 유저만 퇴장
+        userRoomRepository.deleteByRoomIdAndUserId(roomId, userId);
     }
 }
