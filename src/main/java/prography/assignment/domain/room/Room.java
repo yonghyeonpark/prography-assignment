@@ -15,6 +15,7 @@ public class Room extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @JoinColumn(name = "host_id")
     @ManyToOne(fetch = FetchType.LAZY)
     private User host;
 
