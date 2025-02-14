@@ -25,4 +25,10 @@ public class UserRoom {
     private Room room;
 
     private String team; // RED, BLUE
+
+    public UserRoom(User user, Room room, String team) {
+        this.user = user;
+        this.room = room;
+        this.team = team;
+    }
 }
