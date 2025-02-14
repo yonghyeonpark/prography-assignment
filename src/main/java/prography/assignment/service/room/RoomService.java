@@ -1,6 +1,8 @@
 package prography.assignment.service.room;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import prography.assignment.domain.room.Room;
@@ -14,8 +16,8 @@ import prography.assignment.domain.userroom.UserRoomRepository;
 import prography.assignment.exception.CommonException;
 import prography.assignment.web.room.dto.request.AttendRoomRequest;
 import prography.assignment.web.room.dto.request.CreateRoomRequest;
-
-import java.util.List;
+import prography.assignment.web.room.dto.response.RoomResponse;
+import prography.assignment.web.room.dto.response.RoomsResponse;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -43,12 +45,13 @@ public class RoomService {
 
         Room room = createRoomRequest.toEntity(host);
         roomRepository.save(room);
-
         userRoomRepository.save(new UserRoom(host, room, UserRoomConstants.TEAM_RED));
     }
 
-    public List<Room> getRooms() {
-
+    public RoomsResponse getRooms(Pageable pageable) {
+        Page<RoomResponse> result = roomRepository.findAll(pageable)
+                .map(RoomResponse::from);
+        return RoomsResponse.from(result);
     }
 
     public Room getRoomById(Integer roomId) {

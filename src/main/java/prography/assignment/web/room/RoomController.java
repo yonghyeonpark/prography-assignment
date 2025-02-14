@@ -7,8 +7,7 @@ import prography.assignment.domain.room.Room;
 import prography.assignment.service.room.RoomService;
 import prography.assignment.web.ApiResponse;
 import prography.assignment.web.room.dto.request.CreateRoomRequest;
-
-import java.util.List;
+import prography.assignment.web.room.dto.response.RoomsResponse;
 
 @RequiredArgsConstructor
 @RestController
@@ -23,8 +22,8 @@ public class RoomController {
     }
 
     @GetMapping("/room")
-    public ApiResponse<List<Room>> getRooms(Pageable pageable) {
-
+    public ApiResponse<RoomsResponse> getRooms(Pageable pageable) {
+        return ApiResponse.responseSuccess(roomService.getRooms(pageable));
     }
 
     @GetMapping("/room/{roomId}")
