@@ -110,7 +110,7 @@ public class RoomService {
         }
 
         // 팀당 최대 인원
-        int teamCapacity = maxCapacity / 2;
+        int teamCapacity = getTeamCapacity(maxCapacity);
 
         String team = UserRoomConstants.TEAM_RED;
         if (redCount == teamCapacity) {
@@ -160,14 +160,39 @@ public class RoomService {
     // 게임 시작
     @Transactional
     public void startRoom(Integer roomId, StartRoomRequest startRoomRequest) {
+        // 방 존재 여부 확인
+        Room room = roomRepository.findByIdWithHost(roomId)
+                .orElseThrow(CommonException::new);
+
+        // 방 상태가 WAIT일 때만 시작 가능
+        if (!room.getStatus().equals(RoomConstants.WAIT)) {
+            throw new CommonException();
+        }
+
+        int redCount = userRoomRepository.countByRoomIdAndRoomRoomType(roomId, UserRoomConstants.TEAM_RED);
+        int blueCount = userRoomRepository.countByRoomIdAndRoomRoomType(roomId, UserRoomConstants.TEAM_BLUE);
+        int currentCount = redCount + blueCount;
+        int maxCapacity = room.getMaxCapacity();
+        int teamCapacity = getTeamCapacity(maxCapacity);
+
+        // 방 인원수 검증
+        // 1. 정원이 가득찼는지 검증
+        // 2. 팀별 인원수 검증
+        if (maxCapacity != currentCount || redCount != teamCapacity || blueCount != teamCapacity) {
+            throw new CommonException();
+        }
+
+        // 유저 존재 여부 확인
+        User user = userRepository.findById(startRoomRequest.userId())
+                .orElseThrow(CommonException::new);
 
         // 호스트인 유저만 시작 가능
+        if (!room.getHost().getId().equals(user.getId())) {
+            throw new CommonException();
+        }
 
-        // 방 인원이 모두 차야만 가능
-
-        // WAIT에서만 시작 가능
-
-        // PROGRESS로 변경
+        // 방 상태를 PROGRESS로 변경
+        room.startRoom();
 
         // 시작 1분 뒤 FINISh로 변경 => 비동기 처리
     }
@@ -180,5 +205,9 @@ public class RoomService {
         // 각 팀 인원 검증
 
         // 방의 상태 검증 (WAIT) 일 때만 가능
+    }
+
+    private int getTeamCapacity(int maxCapacity) {
+        return maxCapacity / 2;
     }
 }
