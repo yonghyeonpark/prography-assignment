@@ -15,13 +15,9 @@ import prography.assignment.domain.user.UserRepository;
 import prography.assignment.domain.userroom.UserRoom;
 import prography.assignment.domain.userroom.UserRoomRepository;
 import prography.assignment.exception.CommonException;
-import prography.assignment.web.room.dto.request.AttendRoomRequest;
-import prography.assignment.web.room.dto.request.CreateRoomRequest;
-import prography.assignment.web.room.dto.request.OutRoomRequest;
-import prography.assignment.web.room.dto.request.StartRoomRequest;
+import prography.assignment.web.room.dto.request.*;
 import prography.assignment.web.room.dto.response.RoomResponse;
 import prography.assignment.web.room.dto.response.RoomsResponse;
-import prography.assignment.web.team.dto.request.ChangeTeamRequest;
 
 import java.time.Instant;
 
