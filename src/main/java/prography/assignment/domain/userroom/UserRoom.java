@@ -35,4 +35,12 @@ public class UserRoom {
         this.room = room;
         this.team = team;
     }
+
+    public void changeTeam() {
+        if (team.equals(UserRoomConstants.TEAM_RED)) {
+            this.team = UserRoomConstants.TEAM_BLUE;
+            return;
+        }
+        this.team = UserRoomConstants.TEAM_RED;
+    }
 }
