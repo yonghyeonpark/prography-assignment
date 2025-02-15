@@ -3,6 +3,7 @@ package prography.assignment.service.room;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import prography.assignment.domain.room.Room;
@@ -22,6 +23,8 @@ import prography.assignment.web.room.dto.response.RoomResponse;
 import prography.assignment.web.room.dto.response.RoomsResponse;
 import prography.assignment.web.team.dto.request.ChangeTeamRequest;
 
+import java.time.Instant;
+
 import static prography.assignment.domain.userroom.UserRoomConstants.TEAM_BLUE;
 import static prography.assignment.domain.userroom.UserRoomConstants.TEAM_RED;
 
@@ -33,7 +36,9 @@ public class RoomService {
     private final UserRepository userRepository;
     private final UserRoomRepository userRoomRepository;
     private final RoomRepository roomRepository;
+    private final ThreadPoolTaskScheduler taskScheduler;
 
+    // 방 생성
     @Transactional
     public void createRoom(CreateRoomRequest createRoomRequest) {
         User host = userRepository.findById(createRoomRequest.userId())
@@ -183,20 +188,23 @@ public class RoomService {
             throw new CommonException();
         }
 
+        Integer userId = startRoomRequest.userId();
+
         // 유저 존재 여부 확인
-        User user = userRepository.findById(startRoomRequest.userId())
-                .orElseThrow(CommonException::new);
+        if (userRepository.existsById(userId)) {
+            throw new CommonException();
+        }
 
         // 호스트인 유저만 시작 가능
-        if (!room.getHost().getId().equals(user.getId())) {
+        if (!room.getHost().getId().equals(userId)) {
             throw new CommonException();
         }
 
         // 방 상태를 PROGRESS로 변경
         room.startRoom();
 
-        // 시작 1분 뒤 FINISh로 변경 => 비동기 처리
-
+        // 시작후 1분 뒤 FINISH로 변경
+        scheduleRoomFinish(roomId);
     }
 
     // 팀 변경
@@ -238,5 +246,26 @@ public class RoomService {
 
     private int getTeamCapacity(int maxCapacity) {
         return maxCapacity / 2;
+    }
+
+    private void scheduleRoomFinish(Integer roomId) {
+        taskScheduler.schedule(
+                () -> {
+                    try {
+                        finishRoom(roomId);
+                    } catch (Exception e) {
+                        throw new CommonException();
+                    }
+                },
+                Instant.now().plusSeconds(60)
+        );
+    }
+
+    @Transactional
+    protected void finishRoom(Integer roomId) {
+        Room room = roomRepository.findById(roomId)
+                .orElseThrow(CommonException::new);
+
+        room.finishRoom();
     }
 }
