@@ -18,8 +18,10 @@ import prography.assignment.exception.CommonException;
 import prography.assignment.web.room.dto.request.AttendRoomRequest;
 import prography.assignment.web.room.dto.request.CreateRoomRequest;
 import prography.assignment.web.room.dto.request.OutRoomRequest;
+import prography.assignment.web.room.dto.request.StartRoomRequest;
 import prography.assignment.web.room.dto.response.RoomResponse;
 import prography.assignment.web.room.dto.response.RoomsResponse;
+import prography.assignment.web.team.dto.request.ChangeTeamRequest;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -126,13 +128,16 @@ public class RoomService {
             Integer roomId,
             OutRoomRequest outRoomRequest
     ) {
-        Integer userId = outRoomRequest.userId();
+        // 유저 존재 여부 확인
+        User user = userRepository.findById(outRoomRequest.userId())
+                .orElseThrow(CommonException::new);
+        Integer userId = user.getId();
 
         // 참가 여부 확인
-        if (!userRoomRepository.existsByRoomIdAndUserId(roomId, userId)) {
-            throw new CommonException();
-        }
+        UserRoom userRoom = userRoomRepository.findByRoomIdAndUserId(roomId, userId)
+                .orElseThrow(CommonException::new);
 
+        // 방 존재 여부 확인
         Room room = roomRepository.findByIdWithHost(roomId)
                 .orElseThrow(CommonException::new);
 
@@ -149,6 +154,31 @@ public class RoomService {
         }
 
         // 호스트가 아닌 경우 해당 유저만 퇴장
-        userRoomRepository.deleteByRoomIdAndUserId(roomId, userId);
+        userRoomRepository.delete(userRoom);
+    }
+
+    // 게임 시작
+    @Transactional
+    public void startRoom(Integer roomId, StartRoomRequest startRoomRequest) {
+
+        // 호스트인 유저만 시작 가능
+
+        // 방 인원이 모두 차야만 가능
+
+        // WAIT에서만 시작 가능
+
+        // PROGRESS로 변경
+
+        // 시작 1분 뒤 FINISh로 변경 => 비동기 처리
+    }
+
+    @Transactional
+    public void changeTeam(Integer roomId, ChangeTeamRequest changeTeamRequest) {
+
+        // 참가자만 팀 변경 가능
+
+        // 각 팀 인원 검증
+
+        // 방의 상태 검증 (WAIT) 일 때만 가능
     }
 }
