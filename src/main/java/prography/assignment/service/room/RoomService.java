@@ -41,7 +41,10 @@ public class RoomService {
     // 방 생성
     @Transactional
     public void createRoom(CreateRoomRequest createRoomRequest) {
-        User host = userRepository.findById(createRoomRequest.userId())
+        Integer userId = createRoomRequest.userId();
+
+        // 유저 존재 여부 검증
+        User host = userRepository.findById(userId)
                 .orElseThrow(CommonException::new);
 
         // 유저 상태 검증
@@ -50,7 +53,7 @@ public class RoomService {
         }
 
         // 참여한 방 존재 여부 검증
-        if (userRoomRepository.existsByRoomHostId(host.getId())) {
+        if (userRoomRepository.existsByRoomHostId(userId)) {
             throw new CommonException();
         }
 
@@ -74,6 +77,7 @@ public class RoomService {
 
     // 방 단건 조회
     public RoomResponse getRoomById(Integer roomId) {
+        // 방 존재 여부 검증
         Room room = roomRepository.findByIdWithHost(roomId)
                 .orElseThrow(CommonException::new);
         return RoomResponse.from(room);
@@ -85,7 +89,10 @@ public class RoomService {
             Integer roomId,
             AttendRoomRequest attendRoomRequest
     ) {
-        User user = userRepository.findById(attendRoomRequest.userId())
+        Integer userId = attendRoomRequest.userId();
+
+        // 유저 존재 여부 검증
+        User user = userRepository.findById(userId)
                 .orElseThrow(CommonException::new);
 
         // 유저 상태 검증 (ACTIVE 상태만 참가 가능)
@@ -94,7 +101,7 @@ public class RoomService {
         }
 
         // 참여한 방 존재 여부 검증
-        if (userRoomRepository.existsByRoomHostId(user.getId())) {
+        if (userRoomRepository.existsByRoomHostId(userId)) {
             throw new CommonException();
         }
 
@@ -135,25 +142,27 @@ public class RoomService {
             Integer roomId,
             OutRoomRequest outRoomRequest
     ) {
-        // 유저 존재 여부 확인
-        User user = userRepository.findById(outRoomRequest.userId())
-                .orElseThrow(CommonException::new);
-        Integer userId = user.getId();
+        Integer userId = outRoomRequest.userId();
 
-        // 참가 여부 확인
+        // 유저 존재 여부 검증
+        if (userRepository.existsById(userId)) {
+            throw new CommonException();
+        }
+
+        // 참가 여부 검증
         UserRoom userRoom = userRoomRepository.findByRoomIdAndUserId(roomId, userId)
                 .orElseThrow(CommonException::new);
 
-        // 방 존재 여부 확인
+        // 방 존재 여부 검증
         Room room = roomRepository.findByIdWithHost(roomId)
                 .orElseThrow(CommonException::new);
 
-        // 방 상태 확인
+        // 방 상태 검증
         if (!room.getStatus().equals(RoomConstants.WAIT)) {
             throw new CommonException();
         }
 
-        // 호스트가 나가면 모두 퇴장 및 FINISH로 상태 변경
+        // 호스트가 나가면 모든 참가자 퇴장 및 방 상태를 FINISH로 변경
         if (userId.equals(room.getHost().getId())) {
             userRoomRepository.deleteByRoomId(roomId);
             room.finishRoom();
@@ -167,11 +176,11 @@ public class RoomService {
     // 게임 시작
     @Transactional
     public void startRoom(Integer roomId, StartRoomRequest startRoomRequest) {
-        // 방 존재 여부 확인
+        // 방 존재 여부 검증
         Room room = roomRepository.findByIdWithHost(roomId)
                 .orElseThrow(CommonException::new);
 
-        // 방 상태가 WAIT일 때만 시작 가능
+        // 방 상태 검증 (WAIT일 때만 시작 가능)
         if (!room.getStatus().equals(RoomConstants.WAIT)) {
             throw new CommonException();
         }
@@ -190,7 +199,7 @@ public class RoomService {
 
         Integer userId = startRoomRequest.userId();
 
-        // 유저 존재 여부 확인
+        // 유저 존재 여부 검증
         if (userRepository.existsById(userId)) {
             throw new CommonException();
         }
@@ -203,7 +212,7 @@ public class RoomService {
         // 방 상태를 PROGRESS로 변경
         room.startRoom();
 
-        // 시작후 1분 뒤 FINISH로 변경
+        // 방 시작 후 1분 뒤 FINISH로 변경
         scheduleRoomFinish(roomId);
     }
 
@@ -219,12 +228,15 @@ public class RoomService {
             throw new CommonException();
         }
 
+        Integer userId = changeTeamRequest.userId();
+
         // 유저 존재 여부 검증
-        User user = userRepository.findById(changeTeamRequest.userId())
-                .orElseThrow(CommonException::new);
+        if (userRepository.existsById(userId)) {
+            throw new CommonException();
+        }
 
         // 참가 여부 검증
-        UserRoom userRoom = userRoomRepository.findByRoomIdAndUserId(roomId, user.getId())
+        UserRoom userRoom = userRoomRepository.findByRoomIdAndUserId(roomId, userId)
                 .orElseThrow(CommonException::new);
 
         // 변경 대상 팀의 인원수 조회
