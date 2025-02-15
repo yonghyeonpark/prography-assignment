@@ -12,7 +12,6 @@ import prography.assignment.domain.user.User;
 import prography.assignment.domain.user.UserConstants;
 import prography.assignment.domain.user.UserRepository;
 import prography.assignment.domain.userroom.UserRoom;
-import prography.assignment.domain.userroom.UserRoomConstants;
 import prography.assignment.domain.userroom.UserRoomRepository;
 import prography.assignment.exception.CommonException;
 import prography.assignment.web.room.dto.request.AttendRoomRequest;
@@ -22,6 +21,9 @@ import prography.assignment.web.room.dto.request.StartRoomRequest;
 import prography.assignment.web.room.dto.response.RoomResponse;
 import prography.assignment.web.room.dto.response.RoomsResponse;
 import prography.assignment.web.team.dto.request.ChangeTeamRequest;
+
+import static prography.assignment.domain.userroom.UserRoomConstants.TEAM_BLUE;
+import static prography.assignment.domain.userroom.UserRoomConstants.TEAM_RED;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -53,7 +55,7 @@ public class RoomService {
                 new UserRoom(
                         host,
                         room,
-                        UserRoomConstants.TEAM_RED
+                        TEAM_RED
                 )
         );
     }
@@ -99,8 +101,8 @@ public class RoomService {
             throw new CommonException();
         }
 
-        int redCount = userRoomRepository.countByRoomIdAndRoomRoomType(roomId, UserRoomConstants.TEAM_RED);
-        int blueCount = userRoomRepository.countByRoomIdAndRoomRoomType(roomId, UserRoomConstants.TEAM_BLUE);
+        int redCount = userRoomRepository.countByRoomIdAndRoomRoomType(roomId, TEAM_RED);
+        int blueCount = userRoomRepository.countByRoomIdAndRoomRoomType(roomId, TEAM_BLUE);
         int currentCount = redCount + blueCount;
 
         // 참가 방 정원 초과 여부 검증
@@ -112,9 +114,9 @@ public class RoomService {
         // 팀당 최대 인원
         int teamCapacity = getTeamCapacity(maxCapacity);
 
-        String team = UserRoomConstants.TEAM_RED;
+        String team = TEAM_RED;
         if (redCount == teamCapacity) {
-            team = UserRoomConstants.TEAM_BLUE;
+            team = TEAM_BLUE;
         }
 
         userRoomRepository.save(
@@ -169,16 +171,15 @@ public class RoomService {
             throw new CommonException();
         }
 
-        int redCount = userRoomRepository.countByRoomIdAndRoomRoomType(roomId, UserRoomConstants.TEAM_RED);
-        int blueCount = userRoomRepository.countByRoomIdAndRoomRoomType(roomId, UserRoomConstants.TEAM_BLUE);
+        int redCount = userRoomRepository.countByRoomIdAndRoomRoomType(roomId, TEAM_RED);
+        int blueCount = userRoomRepository.countByRoomIdAndRoomRoomType(roomId, TEAM_BLUE);
         int currentCount = redCount + blueCount;
         int maxCapacity = room.getMaxCapacity();
-        int teamCapacity = getTeamCapacity(maxCapacity);
 
         // 방 인원수 검증
         // 1. 정원이 가득찼는지 검증
-        // 2. 팀별 인원수 검증
-        if (maxCapacity != currentCount || redCount != teamCapacity || blueCount != teamCapacity) {
+        // 2. 각 팀 인원수가 같은지 검증
+        if (maxCapacity != currentCount || redCount != blueCount) {
             throw new CommonException();
         }
 
@@ -197,14 +198,41 @@ public class RoomService {
         // 시작 1분 뒤 FINISh로 변경 => 비동기 처리
     }
 
+    // 팀 변경
     @Transactional
     public void changeTeam(Integer roomId, ChangeTeamRequest changeTeamRequest) {
-
-        // 참가자만 팀 변경 가능
-
-        // 각 팀 인원 검증
+        // 방 존재 여부 검증
+        Room room = roomRepository.findById(roomId)
+                .orElseThrow(CommonException::new);
 
         // 방의 상태 검증 (WAIT) 일 때만 가능
+        if (!room.getStatus().equals(RoomConstants.WAIT)) {
+            throw new CommonException();
+        }
+
+        // 유저 존재 여부 검증
+        User user = userRepository.findById(changeTeamRequest.userId())
+                .orElseThrow(CommonException::new);
+
+        // 참가 여부 검증
+        UserRoom userRoom = userRoomRepository.findByRoomIdAndUserId(roomId, user.getId())
+                .orElseThrow(CommonException::new);
+
+        // 변경 대상 팀의 인원수 조회
+        String currentTeam = userRoom.getTeam();
+        String targetTeam = currentTeam.equals(TEAM_RED) ? TEAM_BLUE : TEAM_RED;
+        int targetTeamCount = userRoomRepository.countByRoomIdAndRoomRoomType(roomId, targetTeam);
+
+        int maxCapacity = room.getMaxCapacity();
+        int teamCapacity = getTeamCapacity(maxCapacity);
+
+        // 변경 대상 팀의 인원수 검증
+        if (targetTeamCount == teamCapacity) {
+            throw new CommonException();
+        }
+
+        // 팀 변경
+        userRoom.changeTeam();
     }
 
     private int getTeamCapacity(int maxCapacity) {
