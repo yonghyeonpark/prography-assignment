@@ -165,7 +165,7 @@ public class RoomService {
         // 호스트가 나가면 모든 참가자 퇴장 및 방 상태를 FINISH로 변경
         if (userId.equals(room.getHost().getId())) {
             userRoomRepository.deleteByRoomId(roomId);
-            room.finishRoom();
+            room.finish();
             return;
         }
 
@@ -210,7 +210,7 @@ public class RoomService {
         }
 
         // 방 상태를 PROGRESS로 변경
-        room.startRoom();
+        room.start();
 
         // 방 시작 후 1분 뒤 FINISH로 변경
         scheduleRoomFinish(roomId);
@@ -278,6 +278,6 @@ public class RoomService {
         Room room = roomRepository.findById(roomId)
                 .orElseThrow(CommonException::new);
 
-        room.finishRoom();
+        room.finish();
     }
 }

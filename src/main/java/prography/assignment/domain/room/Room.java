@@ -47,11 +47,11 @@ public class Room extends BaseTimeEntity {
         throw new CommonException();
     }
 
-    public void startRoom() {
+    public void start() {
         this.status = RoomConstants.IN_PROGRESS;
     }
 
-    public void finishRoom() {
+    public void finish() {
         this.status = RoomConstants.FINISHED;
     }
 }
