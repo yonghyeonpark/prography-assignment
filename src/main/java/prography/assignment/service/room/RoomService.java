@@ -93,7 +93,7 @@ public class RoomService {
             throw new CommonException();
         }
 
-        Room room = roomRepository.findByIdWithLock(roomId)
+        Room room = roomRepository.findById(roomId)
                 .orElseThrow(CommonException::new);
 
         // 방 상태 검증 (WAIT 상태에만 참가 가능)
@@ -196,6 +196,7 @@ public class RoomService {
         room.startRoom();
 
         // 시작 1분 뒤 FINISh로 변경 => 비동기 처리
+
     }
 
     // 팀 변경
