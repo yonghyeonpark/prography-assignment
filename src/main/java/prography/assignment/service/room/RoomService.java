@@ -3,7 +3,7 @@ package prography.assignment.service.room;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import prography.assignment.domain.room.Room;
@@ -32,7 +32,7 @@ public class RoomService {
     private final UserRepository userRepository;
     private final UserRoomRepository userRoomRepository;
     private final RoomRepository roomRepository;
-    private final ThreadPoolTaskScheduler taskScheduler;
+    private final TaskScheduler taskScheduler;
 
     // 방 생성
     @Transactional
