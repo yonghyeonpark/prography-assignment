@@ -13,7 +13,7 @@ public class UsersResponse {
 
     private final int totalElements;
     private final int totalPages;
-    private final List<UserResponse> users;
+    private final List<UserResponse> userList;
 
     public static UsersResponse from(Page<UserResponse> result) {
         return new UsersResponse(

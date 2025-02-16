@@ -13,7 +13,7 @@ public class RoomsResponse {
 
     private final int totalElements;
     private final int totalPages;
-    private final List<RoomResponse> rooms;
+    private final List<RoomResponse> roomList;
 
     public static RoomsResponse from(Page<RoomResponse> result) {
         return new RoomsResponse(
