@@ -12,6 +12,8 @@ import prography.assignment.domain.user.UserRepository;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static prography.assignment.domain.room.RoomConstants.FINISHED;
+import static prography.assignment.domain.room.RoomConstants.IN_PROGRESS;
 
 @SpringBootTest
 public class RoomTest {
@@ -61,7 +63,7 @@ public class RoomTest {
         room.start();
 
         // then
-        assertThat(room.getStatus()).isEqualTo(RoomConstants.IN_PROGRESS);
+        assertThat(room.getStatus()).isEqualTo(IN_PROGRESS);
     }
 
     @DisplayName("게임 종료 시, 방의 상태가 종료(FINISH)로 변경된다.")
@@ -74,6 +76,6 @@ public class RoomTest {
         room.finish();
 
         // then
-        assertThat(room.getStatus()).isEqualTo(RoomConstants.FINISHED);
+        assertThat(room.getStatus()).isEqualTo(FINISHED);
     }
 }

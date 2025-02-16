@@ -1,7 +1,8 @@
 package prography.assignment.client.dto.response;
 
 import prography.assignment.domain.user.User;
-import prography.assignment.domain.user.UserConstants;
+
+import static prography.assignment.domain.user.UserConstants.*;
 
 public record FakerUser(Integer id, String username, String email) {
 
@@ -15,8 +16,8 @@ public record FakerUser(Integer id, String username, String email) {
     }
 
     private String setStatus() {
-        if (id <= 30) return UserConstants.ACTIVE;
-        if (id <= 60) return UserConstants.WAIT;
-        return UserConstants.INACTIVE;
+        if (id <= 30) return ACTIVE;
+        if (id <= 60) return WAIT;
+        return NON_ACTIVE;
     }
 }

@@ -9,5 +9,5 @@ public class UserConstants {
     // status
     public static final String WAIT = "WAIT"; // 대기
     public static final String ACTIVE = "ACTIVE"; // 활성
-    public static final String INACTIVE = "NON_ACTIVE"; // 비활성
+    public static final String NON_ACTIVE = "NON_ACTIVE"; // 비활성
 }
