@@ -1,10 +1,13 @@
 INSERT INTO user (faker_id, name, email, status, created_at, updated_at)
-VALUES (13, 'userA', 'userA@email.com', 'ACTIVE', NOW(), NOW()),
-       (17, 'userB', 'userB@email.com', 'ACTIVE', NOW(), NOW()),
-       (33, 'userC', 'userC@email.com', 'ACTIVE', NOW(), NOW()),
-       (35, 'userD', 'userD@email.com', 'ACTIVE', NOW(), NOW()),
-       (77, 'userE', 'userE@email.com', 'WAIT', NOW(), NOW()),
-       (99, 'userF', 'userF@email.com', 'NON_ACTIVE', NOW(), NOW());
+VALUES (3, 'user1', 'user1@email.com', 'ACTIVE', NOW(), NOW()),
+       (5, 'user2', 'user2@email.com', 'ACTIVE', NOW(), NOW()),
+       (7, 'user3', 'user3@email.com', 'ACTIVE', NOW(), NOW()),
+       (9, 'user4', 'user4@email.com', 'ACTIVE', NOW(), NOW()),
+       (11, 'user5', 'user5@email.com', 'ACTIVE', NOW(), NOW()),
+       (13, 'user6', 'user6@email.com', 'ACTIVE', NOW(), NOW()),
+       (15, 'user7', 'user7@email.com', 'ACTIVE', NOW(), NOW()),
+       (77, 'user8', 'user8@email.com', 'WAIT', NOW(), NOW()),
+       (99, 'user9', 'user9@email.com', 'NON_ACTIVE', NOW(), NOW());
 
 INSERT INTO room (host_id, title, room_type, status, created_at, updated_at)
 VALUES (1, '단식방1', 'SINGLE', 'WAIT', NOW(), NOW()),

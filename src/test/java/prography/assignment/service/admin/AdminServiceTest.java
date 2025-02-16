@@ -84,20 +84,21 @@ public class AdminServiceTest {
     @Test
     void getUsers_WithPagination_ThenReturnUserList() {
         // given
-        Pageable pageable = PageRequest.of(1, 2);
+        Pageable pageable = PageRequest.of(1, 3);
 
         // when
         UsersResponse users = adminService.getUsers(pageable);
 
         // then
-        assertThat(users.getTotalElements()).isEqualTo(6);
+        assertThat(users.getTotalElements()).isEqualTo(9);
         assertThat(users.getTotalPages()).isEqualTo(3);
         assertThat(users.getUserList())
-                .hasSize(2)
+                .hasSize(3)
                 .extracting("name", "email")
                 .containsExactly(
-                        tuple("userC", "userC@email.com"),
-                        tuple("userD", "userD@email.com")
+                        tuple("user4", "user4@email.com"),
+                        tuple("user5", "user5@email.com"),
+                        tuple("user6", "user6@email.com")
                 );
     }
 }
