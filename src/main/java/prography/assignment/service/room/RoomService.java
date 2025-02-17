@@ -106,8 +106,8 @@ public class RoomService {
             throw new CommonException();
         }
 
-        int redCount = userRoomRepository.countByRoomIdAndRoomRoomType(roomId, TEAM_RED);
-        int blueCount = userRoomRepository.countByRoomIdAndRoomRoomType(roomId, TEAM_BLUE);
+        int redCount = userRoomRepository.countByRoomIdAndTeam(roomId, TEAM_RED);
+        int blueCount = userRoomRepository.countByRoomIdAndTeam(roomId, TEAM_BLUE);
         int currentCount = redCount + blueCount;
 
         // 참가 방 정원 초과 여부 검증
@@ -175,8 +175,8 @@ public class RoomService {
             throw new CommonException();
         }
 
-        int redCount = userRoomRepository.countByRoomIdAndRoomRoomType(roomId, TEAM_RED);
-        int blueCount = userRoomRepository.countByRoomIdAndRoomRoomType(roomId, TEAM_BLUE);
+        int redCount = userRoomRepository.countByRoomIdAndTeam(roomId, TEAM_RED);
+        int blueCount = userRoomRepository.countByRoomIdAndTeam(roomId, TEAM_BLUE);
         int currentCount = redCount + blueCount;
         int maxCapacity = room.getMaxCapacity();
 
@@ -230,7 +230,7 @@ public class RoomService {
         // 변경 대상 팀의 인원수 조회
         String currentTeam = userRoom.getTeam();
         String targetTeam = currentTeam.equals(TEAM_RED) ? TEAM_BLUE : TEAM_RED;
-        int targetTeamCount = userRoomRepository.countByRoomIdAndRoomRoomType(roomId, targetTeam);
+        int targetTeamCount = userRoomRepository.countByRoomIdAndTeam(roomId, targetTeam);
 
         int maxCapacity = room.getMaxCapacity();
         int teamCapacity = getTeamCapacity(maxCapacity);
