@@ -21,7 +21,7 @@ public class RoomTest {
     @Test
     void getMaxCapacity_WhenSingleRoom_ThenTwo() {
         // given
-        Room room = roomRepository.findById(1).get();
+        Room room = roomRepository.findByIdOrThrow(1);
 
         // when // then
         assertThat(room.getMaxCapacity()).isEqualTo(2);
@@ -31,7 +31,7 @@ public class RoomTest {
     @Test
     void getMaxCapacity_WhenDoubleRoom_ThenFour() {
         // given
-        Room room = roomRepository.findById(3).get();
+        Room room = roomRepository.findByIdOrThrow(3);
 
         // when // then
         assertThat(room.getMaxCapacity()).isEqualTo(4);
@@ -41,7 +41,7 @@ public class RoomTest {
     @Test
     void startGame_ThenRoomStatusIsProgress() {
         // given
-        Room room = roomRepository.findById(1).get();
+        Room room = roomRepository.findByIdOrThrow(1);
 
         // when
         room.start();
@@ -54,7 +54,7 @@ public class RoomTest {
     @Test
     void finishGame_ThenRoomStatusIsFinish() {
         // given
-        Room room = roomRepository.findById(1).get();
+        Room room = roomRepository.findByIdOrThrow(1);
 
         // when
         room.finish();

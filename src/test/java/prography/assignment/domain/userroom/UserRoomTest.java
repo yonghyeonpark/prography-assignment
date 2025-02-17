@@ -21,7 +21,8 @@ public class UserRoomTest {
     @Test
     void changeTeam_WhenRedTeam_ThenBlueTeam() {
         // given
-        UserRoom userRoom = userRoomRepository.findById(1).get();
+        UserRoom userRoom = userRoomRepository.findById(1)
+                .orElseThrow();
 
         // when
         userRoom.changeTeam();
@@ -34,7 +35,8 @@ public class UserRoomTest {
     @Test
     void changeTeam_WhenBlueTeam_ThenRedTeam() {
         // given
-        UserRoom userRoom = userRoomRepository.findById(2).get();
+        UserRoom userRoom = userRoomRepository.findById(2)
+                .orElseThrow();
 
         // when
         userRoom.changeTeam();
