@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import prography.assignment.exception.CommonException;
 
 import java.util.Optional;
 
@@ -30,4 +31,14 @@ public interface RoomRepository extends JpaRepository<Room, Integer> {
             WHERE r.id = :roomId
             """)
     Optional<Room> findByIdWithHost(Integer roomId);
+
+    default Room findByIdOrThrow(Integer roomId) {
+        return findById(roomId)
+                .orElseThrow(CommonException::new);
+    }
+
+    default Room findByIdWithHostOrThrow(Integer roomId) {
+        return findByIdWithHost(roomId)
+                .orElseThrow(CommonException::new);
+    }
 }
