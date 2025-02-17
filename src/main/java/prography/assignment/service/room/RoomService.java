@@ -138,7 +138,7 @@ public class RoomService {
         Integer userId = outRoomRequest.userId();
 
         // 유저 존재 여부 검증
-        if (userRepository.existsById(userId)) {
+        if (!userRepository.existsById(userId)) {
             throw new CommonException();
         }
 
@@ -190,7 +190,7 @@ public class RoomService {
         Integer userId = startRoomRequest.userId();
 
         // 유저 존재 여부 검증
-        if (userRepository.existsById(userId)) {
+        if (!userRepository.existsById(userId)) {
             throw new CommonException();
         }
 
@@ -220,7 +220,7 @@ public class RoomService {
         Integer userId = changeTeamRequest.userId();
 
         // 유저 존재 여부 검증
-        if (userRepository.existsById(userId)) {
+        if (!userRepository.existsById(userId)) {
             throw new CommonException();
         }
 
