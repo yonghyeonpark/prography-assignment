@@ -60,7 +60,9 @@ public class AdminControllerTest {
         // given
         InitRequest request = new InitRequest(5, 30);
 
-        doNothing().when(adminService).init(request);
+        doNothing()
+                .when(adminService)
+                .init(request);
 
         // when // then
         mockMvc.perform(post("/init")

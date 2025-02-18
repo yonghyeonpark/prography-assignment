@@ -54,7 +54,9 @@ public class RoomControllerTest {
         // given
         CreateRoomRequest request = new CreateRoomRequest(1, "title", SINGLE);
 
-        doNothing().when(roomService).createRoom(request);
+        doNothing()
+                .when(roomService)
+                .createRoom(request);
 
         // when // then
         mockMvc.perform(post("/room")
@@ -219,7 +221,9 @@ public class RoomControllerTest {
         AttendRoomRequest request = new AttendRoomRequest(1);
         int roomId = 2;
 
-        doNothing().when(roomService).attendRoom(roomId, request);
+        doNothing()
+                .when(roomService)
+                .attendRoom(roomId, request);
 
         // when // then
         mockMvc.perform(post("/room/attention/{roomId}", roomId)
@@ -239,7 +243,9 @@ public class RoomControllerTest {
         OutRoomRequest request = new OutRoomRequest(1);
         int roomId = 1;
 
-        doNothing().when(roomService).outRoom(roomId, request);
+        doNothing()
+                .when(roomService)
+                .outRoom(roomId, request);
 
         // when // then
         mockMvc.perform(post("/room/out/{roomId}", roomId)
@@ -259,7 +265,9 @@ public class RoomControllerTest {
         StartRoomRequest request = new StartRoomRequest(1);
         int roomId = 1;
 
-        doNothing().when(roomService).startRoom(roomId, request);
+        doNothing()
+                .when(roomService)
+                .startRoom(roomId, request);
 
         // when // then
         mockMvc.perform(put("/room/start/{roomId}", roomId)
@@ -279,7 +287,9 @@ public class RoomControllerTest {
         ChangeTeamRequest request = new ChangeTeamRequest(1);
         int roomId = 1;
 
-        doNothing().when(roomService).changeTeam(roomId, request);
+        doNothing()
+                .when(roomService)
+                .changeTeam(roomId, request);
 
         // when // then
         mockMvc.perform(put("/team/{roomId}", roomId)
