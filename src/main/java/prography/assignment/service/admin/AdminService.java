@@ -27,17 +27,18 @@ public class AdminService {
     private final FakerClient fakerClient;
 
     public void init(InitRequest initRequest) {
+        // 기존 데이터 삭제
         userRoomRepository.deleteAllInBatch();
         roomRepository.deleteAllInBatch();
         userRepository.deleteAllInBatch();
 
+        // faker API 호출을 통해 새로운 유저 데이터 저장
         List<User> users = fakerClient.getData(initRequest.seed(), initRequest.quantity())
                 .data()
                 .stream()
                 .sorted(Comparator.comparing(FakerUser::id))
                 .map(FakerUser::toEntity)
                 .toList();
-
         userRepository.saveAll(users);
     }
 
