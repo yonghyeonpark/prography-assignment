@@ -11,6 +11,6 @@ public enum ResponseStatus {
     IMPOSSIBLE(201, "불가능한 요청입니다."),
     SERVER_ERROR(500, "에러가 발생했습니다.");
 
-    private final int code;
+    private final Integer code;
     private final String message;
 }
