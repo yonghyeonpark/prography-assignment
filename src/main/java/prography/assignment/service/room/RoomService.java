@@ -260,7 +260,7 @@ public class RoomService {
                         throw new CommonException();
                     }
                 },
-                Instant.now().plusSeconds(10)
+                Instant.now().plusSeconds(60)
         );
     }
 }
