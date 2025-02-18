@@ -17,6 +17,7 @@ import prography.assignment.domain.userroom.UserRoomRepository;
 import prography.assignment.exception.CommonException;
 import prography.assignment.service.room.schedule.RoomFinisher;
 import prography.assignment.web.room.dto.request.*;
+import prography.assignment.web.room.dto.response.RoomForListResponse;
 import prography.assignment.web.room.dto.response.RoomResponse;
 import prography.assignment.web.room.dto.response.RoomsResponse;
 
@@ -67,8 +68,8 @@ public class RoomService {
 
     // 방 목록 조회
     public RoomsResponse getRooms(Pageable pageable) {
-        Page<RoomResponse> result = roomRepository.findAllWithHost(pageable)
-                .map(RoomResponse::from);
+        Page<RoomForListResponse> result = roomRepository.findAllWithHost(pageable)
+                .map(RoomForListResponse::from);
         return RoomsResponse.from(result);
     }
 

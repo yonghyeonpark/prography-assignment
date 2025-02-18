@@ -13,9 +13,9 @@ public class RoomsResponse {
 
     private final int totalElements;
     private final int totalPages;
-    private final List<RoomResponse> roomList;
+    private final List<RoomForListResponse> roomList;
 
-    public static RoomsResponse from(Page<RoomResponse> result) {
+    public static RoomsResponse from(Page<RoomForListResponse> result) {
         return new RoomsResponse(
                 (int) result.getTotalElements(),
                 result.getTotalPages(),

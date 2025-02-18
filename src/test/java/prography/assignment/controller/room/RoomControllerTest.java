@@ -19,6 +19,7 @@ import prography.assignment.exception.CommonException;
 import prography.assignment.service.room.RoomService;
 import prography.assignment.web.room.RoomController;
 import prography.assignment.web.room.dto.request.*;
+import prography.assignment.web.room.dto.response.RoomForListResponse;
 import prography.assignment.web.room.dto.response.RoomResponse;
 import prography.assignment.web.room.dto.response.RoomsResponse;
 
@@ -146,16 +147,16 @@ public class RoomControllerTest {
                 LocalDateTime.now(),
                 LocalDateTime.now()
         );
-        List<RoomResponse> roomList = List.of(
-                RoomResponse.from(room1),
-                RoomResponse.from(room2)
+        List<RoomForListResponse> roomList = List.of(
+                RoomForListResponse.from(room1),
+                RoomForListResponse.from(room2)
         );
 
         int totalElements = 10;
         int pageSize = 2;
         int totalPages = 5;
         Pageable pageable = PageRequest.of(1, pageSize);
-        Page<RoomResponse> page = new PageImpl<>(roomList, pageable, totalElements);
+        Page<RoomForListResponse> page = new PageImpl<>(roomList, pageable, totalElements);
         RoomsResponse response = RoomsResponse.from(page);
 
         given(roomService.getRooms(any(Pageable.class)))
