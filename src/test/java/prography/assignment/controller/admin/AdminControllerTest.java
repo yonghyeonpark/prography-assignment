@@ -45,7 +45,7 @@ public class AdminControllerTest {
 
     @DisplayName("GET /health - 서버가 정상 동작 중이면 200 응답을 반환한다.")
     @Test
-    void healthCheck() throws Exception {
+    void healthCheck_returnsOkResponse() throws Exception {
         // when // then
         mockMvc.perform(get("/health"))
                 .andExpect(status().isOk())
@@ -54,9 +54,9 @@ public class AdminControllerTest {
                 .andExpect(jsonPath("$.message").value(OK.getMessage()));
     }
 
-    @DisplayName("POST /init - 기존 데이터를 초기화하고 새로운 유저 데이터를 생성한다.")
+    @DisplayName("POST /init - 기존 데이터를 초기화하고 200 응답을 반환한다.")
     @Test
-    void initialize() throws Exception {
+    void initialize_returnsOkResponse() throws Exception {
         // given
         InitRequest request = new InitRequest(5, 30);
 
@@ -72,9 +72,9 @@ public class AdminControllerTest {
                 .andExpect(jsonPath("$.message").value(OK.getMessage()));
     }
 
-    @DisplayName("GET /user - 페이징 파라미터에 따른 유저 목록을 반환한다.")
+    @DisplayName("GET /user - 페이징 파라미터에 따른 유저 목록과 200 응답을 반환한다.")
     @Test
-    void getUsers() throws Exception {
+    void getUsers_returnsOkResponse() throws Exception {
         // given
         User user1 = new User(
                 1,
