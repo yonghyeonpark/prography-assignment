@@ -1,18 +1,13 @@
-package prography.assignment.web;
+package prography.assignment.web.common;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 
+import static prography.assignment.web.common.ResponseStatus.*;
+
 @Getter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ApiResponse<T> {
-
-    private static final int OK = 200;
-    private static final int IMPOSSIBLE = 201;
-    private static final int SERVER_ERROR = 500;
-    private static final String OK_MESSAGE = "API 요청이 성공했습니다.";
-    private static final String IMPOSSIBLE_MESSAGE = "불가능한 요청입니다.";
-    private static final String SERVER_ERROR_MESSAGE = "에러가 발생했습니다.";
 
     private final Integer code;
     private final String message;
@@ -30,26 +25,26 @@ public class ApiResponse<T> {
     }
 
     public static <T> ApiResponse<T> responseSuccess(T result) {
-        return new ApiResponse<T>(OK, OK_MESSAGE, result);
+        return new ApiResponse<T>(OK.getCode(), OK.getMessage(), result);
     }
 
     public static <T> ApiResponse<T> responseSuccess() {
-        return new ApiResponse<T>(OK, OK_MESSAGE);
+        return new ApiResponse<T>(OK.getCode(), OK.getMessage());
     }
 
     public static <T> ApiResponse<T> responseImpossible(T result) {
-        return new ApiResponse<T>(IMPOSSIBLE, IMPOSSIBLE_MESSAGE, result);
+        return new ApiResponse<T>(IMPOSSIBLE.getCode(), IMPOSSIBLE.getMessage(), result);
     }
 
     public static <T> ApiResponse<T> responseImpossible() {
-        return new ApiResponse<T>(IMPOSSIBLE, IMPOSSIBLE_MESSAGE);
+        return new ApiResponse<T>(IMPOSSIBLE.getCode(), IMPOSSIBLE.getMessage());
     }
 
     public static <T> ApiResponse<T> responseServerError(T result) {
-        return new ApiResponse<T>(SERVER_ERROR, SERVER_ERROR_MESSAGE, result);
+        return new ApiResponse<T>(SERVER_ERROR.getCode(), SERVER_ERROR.getMessage(), result);
     }
 
     public static <T> ApiResponse<T> responseServerError() {
-        return new ApiResponse<T>(SERVER_ERROR, SERVER_ERROR_MESSAGE);
+        return new ApiResponse<T>(SERVER_ERROR.getCode(), SERVER_ERROR.getMessage());
     }
 }

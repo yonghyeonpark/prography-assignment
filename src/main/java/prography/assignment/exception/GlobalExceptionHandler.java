@@ -2,7 +2,7 @@ package prography.assignment.exception;
 
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import prography.assignment.web.ApiResponse;
+import prography.assignment.web.common.ApiResponse;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {

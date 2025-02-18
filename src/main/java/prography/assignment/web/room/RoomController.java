@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 import prography.assignment.service.room.RoomService;
-import prography.assignment.web.ApiResponse;
+import prography.assignment.web.common.ApiResponse;
 import prography.assignment.web.room.dto.request.*;
 import prography.assignment.web.room.dto.response.RoomResponse;
 import prography.assignment.web.room.dto.response.RoomsResponse;

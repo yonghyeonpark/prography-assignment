@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import prography.assignment.service.admin.AdminService;
-import prography.assignment.web.ApiResponse;
 import prography.assignment.web.admin.dto.request.InitRequest;
 import prography.assignment.web.admin.dto.response.UsersResponse;
+import prography.assignment.web.common.ApiResponse;
 
 @RequiredArgsConstructor
 @RestController
