@@ -9,6 +9,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import prography.assignment.domain.BaseTimeEntity;
 
+import java.time.LocalDateTime;
+
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
@@ -29,6 +31,24 @@ public class User extends BaseTimeEntity {
             String email,
             String status
     ) {
+        this.fakerId = fakerId;
+        this.name = name;
+        this.email = email;
+        this.status = status;
+    }
+
+    // 테스트용 생성자
+    public User(
+            Integer id,
+            Integer fakerId,
+            String name,
+            String email,
+            String status,
+            LocalDateTime createdAt,
+            LocalDateTime updatedAt
+    ) {
+        super(createdAt, updatedAt);
+        this.id = id;
         this.fakerId = fakerId;
         this.name = name;
         this.email = email;
