@@ -15,6 +15,7 @@ import prography.assignment.domain.user.UserRepository;
 import prography.assignment.domain.userroom.UserRoom;
 import prography.assignment.domain.userroom.UserRoomRepository;
 import prography.assignment.exception.CommonException;
+import prography.assignment.service.room.schedule.RoomFinisher;
 import prography.assignment.web.room.dto.request.*;
 import prography.assignment.web.room.dto.response.RoomResponse;
 import prography.assignment.web.room.dto.response.RoomsResponse;
@@ -33,6 +34,7 @@ public class RoomService {
     private final UserRoomRepository userRoomRepository;
     private final RoomRepository roomRepository;
     private final TaskScheduler taskScheduler;
+    private final RoomFinisher roomFinisher;
 
     // 방 생성
     @Transactional
@@ -252,18 +254,12 @@ public class RoomService {
         taskScheduler.schedule(
                 () -> {
                     try {
-                        finishRoom(roomId);
+                        roomFinisher.finish(roomId);
                     } catch (Exception e) {
                         throw new CommonException();
                     }
                 },
-                Instant.now().plusSeconds(60)
+                Instant.now().plusSeconds(10)
         );
-    }
-
-    @Transactional
-    protected void finishRoom(Integer roomId) {
-        Room room = roomRepository.findByIdOrThrow(roomId);
-        room.finish();
     }
 }
