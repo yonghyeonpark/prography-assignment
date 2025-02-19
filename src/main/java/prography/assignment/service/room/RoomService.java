@@ -22,6 +22,7 @@ import prography.assignment.web.room.dto.response.RoomResponse;
 import prography.assignment.web.room.dto.response.RoomsResponse;
 
 import java.time.Instant;
+import java.util.List;
 
 import static prography.assignment.domain.userroom.UserRoomConstants.TEAM_BLUE;
 import static prography.assignment.domain.userroom.UserRoomConstants.TEAM_RED;
@@ -30,6 +31,8 @@ import static prography.assignment.domain.userroom.UserRoomConstants.TEAM_RED;
 @Transactional(readOnly = true)
 @Service
 public class RoomService {
+
+    private static final int GAME_FINISH_DELAY_SECONDS = 60;
 
     private final UserRepository userRepository;
     private final UserRoomRepository userRoomRepository;
@@ -41,28 +44,13 @@ public class RoomService {
     @Transactional
     public void createRoom(CreateRoomRequest createRoomRequest) {
         Integer userId = createRoomRequest.userId();
-
-        // 유저 존재 여부 검증
-        User host = userRepository.findByIdOrThrow(userId);
-
-        // 유저 상태 검증
-        if (!host.getStatus().equals(UserConstants.ACTIVE)) {
-            throw new CommonException();
-        }
-
-        // 참여한 방 존재 여부 검증
-        if (userRoomRepository.existsByRoomHostId(userId)) {
-            throw new CommonException();
-        }
+        User host = getActiveUserOrThrow(userId);
+        validateUserNotInRoom(userId);
 
         Room room = createRoomRequest.toEntity(host);
         roomRepository.save(room);
         userRoomRepository.save(
-                new UserRoom(
-                        host,
-                        room,
-                        TEAM_RED
-                )
+                new UserRoom(host, room, TEAM_RED)
         );
     }
 
@@ -75,8 +63,7 @@ public class RoomService {
 
     // 방 단건 조회
     public RoomResponse getRoomById(Integer roomId) {
-        // 방 존재 여부 검증
-        Room room = roomRepository.findByIdWithHostOrThrow(roomId);
+        Room room = getRoomOrThrow(roomId);
         return RoomResponse.from(room);
     }
 
@@ -87,31 +74,14 @@ public class RoomService {
             AttendRoomRequest attendRoomRequest
     ) {
         Integer userId = attendRoomRequest.userId();
+        User user = getActiveUserOrThrow(userId);
+        validateUserNotInRoom(userId);
 
-        // 유저 존재 여부 검증
-        User user = userRepository.findByIdOrThrow(userId);
+        Room room = getWaitingRoomOrThrow(roomId);
 
-        // 유저 상태 검증 (ACTIVE 상태만 참가 가능)
-        if (!user.getStatus().equals(UserConstants.ACTIVE)) {
-            throw new CommonException();
-        }
-
-        // 참여한 방 존재 여부 검증
-        if (userRoomRepository.existsByRoomHostId(userId)) {
-            throw new CommonException();
-        }
-
-        // 방 존재 여부 검증
-        Room room = roomRepository.findByIdOrThrow(roomId);
-
-        // 방 상태 검증 (WAIT 상태에만 참가 가능)
-        if (!room.getStatus().equals(RoomConstants.WAIT)) {
-            throw new CommonException();
-        }
-
-        int redCount = userRoomRepository.countByRoomIdAndTeam(roomId, TEAM_RED);
-        int blueCount = userRoomRepository.countByRoomIdAndTeam(roomId, TEAM_BLUE);
-        int currentCount = redCount + blueCount;
+        List<Integer> teamCounts = getTeamCounts(roomId);
+        int redCount = teamCounts.get(0);
+        int currentCount = teamCounts.get(2);
 
         // 참가 방 정원 초과 여부 검증
         int maxCapacity = room.getMaxCapacity();
@@ -119,11 +89,11 @@ public class RoomService {
             throw new CommonException();
         }
 
-        // 팀당 최대 인원
-        int teamCapacity = getTeamCapacity(maxCapacity);
-
+        // 기본으로 배정되는 팀은 RED
+        // RED 팀의 정원이 차면 BLUE 팀으로 배정
+        int teamMaxCapacity = getTeamMaxCapacity(maxCapacity);
         String team = TEAM_RED;
-        if (redCount == teamCapacity) {
+        if (redCount == teamMaxCapacity) {
             team = TEAM_BLUE;
         }
 
@@ -139,22 +109,10 @@ public class RoomService {
             OutRoomRequest outRoomRequest
     ) {
         Integer userId = outRoomRequest.userId();
+        validateUserExists(userId);
 
-        // 유저 존재 여부 검증
-        if (!userRepository.existsById(userId)) {
-            throw new CommonException();
-        }
-
-        // 참가 여부 검증
-        UserRoom userRoom = userRoomRepository.findByRoomIdAndUserIdOrThrow(roomId, userId);
-
-        // 방 존재 여부 검증
-        Room room = roomRepository.findByIdWithHostOrThrow(roomId);
-
-        // 방 상태 검증
-        if (!room.getStatus().equals(RoomConstants.WAIT)) {
-            throw new CommonException();
-        }
+        UserRoom userRoom = getUserRoomOrThrow(roomId, userId);
+        Room room = getWaitingRoomOrThrow(roomId);
 
         // 호스트가 나가면 모든 참가자 퇴장 및 방 상태를 FINISH로 변경
         if (userId.equals(room.getHost().getId())) {
@@ -170,17 +128,12 @@ public class RoomService {
     // 게임 시작
     @Transactional
     public void startRoom(Integer roomId, StartRoomRequest startRoomRequest) {
-        // 방 존재 여부 검증
-        Room room = roomRepository.findByIdWithHostOrThrow(roomId);
+        Room room = getWaitingRoomOrThrow(roomId);
 
-        // 방 상태 검증 (WAIT일 때만 시작 가능)
-        if (!room.getStatus().equals(RoomConstants.WAIT)) {
-            throw new CommonException();
-        }
-
-        int redCount = userRoomRepository.countByRoomIdAndTeam(roomId, TEAM_RED);
-        int blueCount = userRoomRepository.countByRoomIdAndTeam(roomId, TEAM_BLUE);
-        int currentCount = redCount + blueCount;
+        List<Integer> teamCounts = getTeamCounts(roomId);
+        int redCount = teamCounts.get(0);
+        int blueCount = teamCounts.get(1);
+        int currentCount = teamCounts.get(2);
         int maxCapacity = room.getMaxCapacity();
 
         // 방 인원수 검증
@@ -191,11 +144,7 @@ public class RoomService {
         }
 
         Integer userId = startRoomRequest.userId();
-
-        // 유저 존재 여부 검증
-        if (!userRepository.existsById(userId)) {
-            throw new CommonException();
-        }
+        validateUserExists(userId);
 
         // 호스트인 유저만 시작 가능
         if (!room.getHost().getId().equals(userId)) {
@@ -212,23 +161,12 @@ public class RoomService {
     // 팀 변경
     @Transactional
     public void changeTeam(Integer roomId, ChangeTeamRequest changeTeamRequest) {
-        // 방 존재 여부 검증
-        Room room = roomRepository.findByIdOrThrow(roomId);
-
-        // 방의 상태 검증 (WAIT) 일 때만 가능
-        if (!room.getStatus().equals(RoomConstants.WAIT)) {
-            throw new CommonException();
-        }
+        Room room = getWaitingRoomOrThrow(roomId);
 
         Integer userId = changeTeamRequest.userId();
+        validateUserExists(userId);
 
-        // 유저 존재 여부 검증
-        if (!userRepository.existsById(userId)) {
-            throw new CommonException();
-        }
-
-        // 참가 여부 검증
-        UserRoom userRoom = userRoomRepository.findByRoomIdAndUserIdOrThrow(roomId, userId);
+        UserRoom userRoom = getUserRoomOrThrow(roomId, userId);
 
         // 변경 대상 팀의 인원수 조회
         String currentTeam = userRoom.getTeam();
@@ -236,10 +174,10 @@ public class RoomService {
         int targetTeamCount = userRoomRepository.countByRoomIdAndTeam(roomId, targetTeam);
 
         int maxCapacity = room.getMaxCapacity();
-        int teamCapacity = getTeamCapacity(maxCapacity);
+        int teamMaxCapacity = getTeamMaxCapacity(maxCapacity);
 
         // 변경 대상 팀의 인원수 검증
-        if (targetTeamCount == teamCapacity) {
+        if (targetTeamCount == teamMaxCapacity) {
             throw new CommonException();
         }
 
@@ -247,10 +185,61 @@ public class RoomService {
         userRoom.changeTeam();
     }
 
-    private int getTeamCapacity(int maxCapacity) {
+    // 유저 존재 여부 및 활성 상태 검증 후 객체 반환
+    private User getActiveUserOrThrow(Integer userId) {
+        User user = userRepository.findByIdOrThrow(userId);
+        if (!user.getStatus().equals(UserConstants.ACTIVE)) {
+            throw new CommonException();
+        }
+        return user;
+    }
+
+    // 유저 존재 여부 검증
+    private void validateUserExists(Integer userId) {
+        if (!userRepository.existsById(userId)) {
+            throw new CommonException();
+        }
+    }
+
+    // 유저가 이미 참여한 방이 있는지 검증
+    private void validateUserNotInRoom(Integer userId) {
+        if (userRoomRepository.existsByRoomHostId(userId)) {
+            throw new CommonException();
+        }
+    }
+
+    // 유저가 특정 방에 속해 있는지 확인하고 반환
+    private UserRoom getUserRoomOrThrow(Integer roomId, Integer userId) {
+        return userRoomRepository.findByRoomIdAndUserIdOrThrow(roomId, userId);
+    }
+
+    // 방 존재 여부 및 대기 상태 검증 후 객체 반환
+    private Room getWaitingRoomOrThrow(Integer roomId) {
+        Room room = getRoomOrThrow(roomId);
+        if (!room.getStatus().equals(RoomConstants.WAIT)) {
+            throw new CommonException();
+        }
+        return room;
+    }
+
+    // 방 존재 여부 검증 후 객체 반환
+    private Room getRoomOrThrow(Integer roomId) {
+        return roomRepository.findByIdWithHostOrThrow(roomId);
+    }
+
+    // 해당 방의 팀별 및 총 인원수를 반환
+    private List<Integer> getTeamCounts(Integer roomId) {
+        int redCount = userRoomRepository.countByRoomIdAndTeam(roomId, TEAM_RED);
+        int blueCount = userRoomRepository.countByRoomIdAndTeam(roomId, TEAM_BLUE);
+        return List.of(redCount, blueCount, redCount + blueCount);
+    }
+
+    // 방의 팀별 최대 인원수 반환
+    private int getTeamMaxCapacity(int maxCapacity) {
         return maxCapacity / 2;
     }
 
+    // 1분 후에 방 상태를 FINISH로 변경하는 스케줄러 등록
     private void scheduleRoomFinish(Integer roomId) {
         taskScheduler.schedule(
                 () -> {
@@ -260,7 +249,7 @@ public class RoomService {
                         throw new CommonException();
                     }
                 },
-                Instant.now().plusSeconds(60)
+                Instant.now().plusSeconds(GAME_FINISH_DELAY_SECONDS)
         );
     }
 }
