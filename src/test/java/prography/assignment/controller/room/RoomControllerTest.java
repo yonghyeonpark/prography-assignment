@@ -11,6 +11,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import prography.assignment.domain.room.Room;
@@ -36,6 +37,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static prography.assignment.domain.room.RoomConstants.SINGLE;
 import static prography.assignment.web.common.ResponseStatus.*;
 
+@ActiveProfiles("test")
 @WebMvcTest(controllers = RoomController.class)
 public class RoomControllerTest {
 

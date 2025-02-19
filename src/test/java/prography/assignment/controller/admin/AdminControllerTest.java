@@ -11,6 +11,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import prography.assignment.domain.user.User;
 import prography.assignment.service.admin.AdminService;
@@ -31,6 +32,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static prography.assignment.web.common.ResponseStatus.OK;
 
+@ActiveProfiles("test")
 @WebMvcTest(controllers = AdminController.class)
 public class AdminControllerTest {
 

@@ -9,6 +9,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.TaskScheduler;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 import prography.assignment.domain.room.Room;
 import prography.assignment.domain.room.RoomRepository;
@@ -32,6 +33,7 @@ import static prography.assignment.domain.userroom.UserRoomConstants.TEAM_BLUE;
 import static prography.assignment.domain.userroom.UserRoomConstants.TEAM_RED;
 
 @Transactional
+@ActiveProfiles("test")
 @SpringBootTest
 public class RoomServiceTest {
 

@@ -7,6 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 import prography.assignment.client.FakerClient;
 import prography.assignment.client.dto.response.FakerResponse;
@@ -27,6 +28,7 @@ import static org.mockito.BDDMockito.given;
 import static prography.assignment.domain.user.UserConstants.*;
 
 @Transactional
+@ActiveProfiles("test")
 @SpringBootTest
 public class AdminServiceTest {
 
