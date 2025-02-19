@@ -245,8 +245,10 @@ public class RoomService {
                 () -> {
                     try {
                         roomFinisher.finish(roomId);
-                    } catch (Exception e) {
+                    } catch (CommonException e) {
                         throw new CommonException();
+                    } catch (Exception e) {
+                        throw new RuntimeException();
                     }
                 },
                 Instant.now().plusSeconds(GAME_FINISH_DELAY_SECONDS)

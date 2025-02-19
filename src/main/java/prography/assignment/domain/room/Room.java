@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import prography.assignment.domain.BaseTimeEntity;
 import prography.assignment.domain.user.User;
-import prography.assignment.exception.CommonException;
 
 import java.time.LocalDateTime;
 
@@ -59,10 +58,7 @@ public class Room extends BaseTimeEntity {
         if (roomType.equals(RoomConstants.SINGLE)) {
             return 2;
         }
-        if (roomType.equals(RoomConstants.DOUBLE)) {
-            return 4;
-        }
-        throw new CommonException();
+        return 4;
     }
 
     public void start() {
