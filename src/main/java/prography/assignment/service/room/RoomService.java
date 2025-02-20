@@ -203,7 +203,7 @@ public class RoomService {
 
     // 유저가 이미 참여한 방이 있는지 검증
     private void validateUserNotInRoom(Integer userId) {
-        if (userRoomRepository.existsByRoomHostId(userId)) {
+        if (userRoomRepository.existsByUserId(userId)) {
             throw new CommonException();
         }
     }
