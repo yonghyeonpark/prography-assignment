@@ -8,9 +8,14 @@ import prography.assignment.client.dto.response.FakerResponse;
 @FeignClient(name = "fakerClient", url = "https://fakerapi.it")
 public interface FakerClient {
 
-    @GetMapping(value = "/api/v1/users", params = "_locale=ko_KR")
+    @GetMapping(value = "/api/v1/users")
     FakerResponse getData(
             @RequestParam("_seed") int seed,
-            @RequestParam("_quantity") int quantity
+            @RequestParam("_quantity") int quantity,
+            @RequestParam("_locale") String locale
     );
+
+    default FakerResponse getData(int seed, int quantity) {
+        return getData(seed, quantity, "ko_KR");
+    }
 }
