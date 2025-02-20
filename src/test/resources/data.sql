@@ -1,4 +1,4 @@
-INSERT INTO user (faker_id, name, email, status, created_at, updated_at)
+INSERT INTO users (faker_id, name, email, status, created_at, updated_at)
 VALUES (3, 'user1', 'user1@email.com', 'ACTIVE', NOW(), NOW()),
        (5, 'user2', 'user2@email.com', 'ACTIVE', NOW(), NOW()),
        (7, 'user3', 'user3@email.com', 'ACTIVE', NOW(), NOW()),
