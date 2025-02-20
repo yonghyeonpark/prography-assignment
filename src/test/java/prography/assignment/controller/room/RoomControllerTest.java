@@ -106,7 +106,7 @@ public class RoomControllerTest {
         mockMvc.perform(post("/room")
                         .content(objectMapper.writeValueAsString(request))
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
+                .andExpect(status().isInternalServerError())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.code").value(SERVER_ERROR.getCode()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").value(SERVER_ERROR.getMessage()));
