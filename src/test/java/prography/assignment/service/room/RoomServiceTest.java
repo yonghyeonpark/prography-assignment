@@ -127,8 +127,8 @@ public class RoomServiceTest {
                 .hasSize(2)
                 .extracting("title", "roomType")
                 .containsExactly(
-                        tuple("복식방1", "DOUBLE"),
-                        tuple("복식방2", "DOUBLE")
+                        tuple("Double Room1", "DOUBLE"),
+                        tuple("Double Room2", "DOUBLE")
                 );
     }
 
@@ -144,7 +144,7 @@ public class RoomServiceTest {
         // then
         assertThat(room)
                 .extracting("title", "roomType")
-                .containsExactly("단식방1", "SINGLE");
+                .containsExactly("Single Room1", "SINGLE");
     }
 
     @DisplayName("유저가 방에 참가하면 UserRoom에 참가 정보가 저장된다.")

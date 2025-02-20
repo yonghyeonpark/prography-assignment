@@ -10,10 +10,10 @@ VALUES (3, 'user1', 'user1@email.com', 'ACTIVE', NOW(), NOW()),
        (99, 'user9', 'user9@email.com', 'NON_ACTIVE', NOW(), NOW());
 
 INSERT INTO room (host_id, title, room_type, status, created_at, updated_at)
-VALUES (1, '단식방1', 'SINGLE', 'WAIT', NOW(), NOW()),
-       (2, '단식방2', 'SINGLE', 'WAIT', NOW(), NOW()),
-       (3, '복식방1', 'DOUBLE', 'WAIT', NOW(), NOW()),
-       (4, '복식방2', 'DOUBLE', 'WAIT', NOW(), NOW());
+VALUES (1, 'Single Room1', 'SINGLE', 'WAIT', NOW(), NOW()),
+       (2, 'Single Room2', 'SINGLE', 'WAIT', NOW(), NOW()),
+       (3, 'Double Room1', 'DOUBLE', 'WAIT', NOW(), NOW()),
+       (4, 'Double Room2', 'DOUBLE', 'WAIT', NOW(), NOW());
 
 INSERT INTO user_room (user_id, room_id, team)
 VALUES (1, 1, 'RED'),
